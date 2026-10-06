@@ -1,0 +1,11 @@
+# Dependencias de Python del paquete (instalar dentro de .venv creado con --system-site-packages).
+#
+# Antes de este archivo, instalar torch y torchvision SIN CUDA:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#
+# numpy<2: cv_bridge de ROS 2 Jazzy está compilado contra NumPy 1.x.
+# opencv-python 4.11.0.86: la última versión que acepta numpy<2 (4.12+ exige numpy>=2).
+# ultralytics fijo para que la instalación sea reproducible (research R5, R6).
+numpy<2
+opencv-python==4.11.0.86
+ultralytics==8.4.174

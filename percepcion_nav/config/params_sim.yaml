@@ -1,0 +1,20 @@
+# Sobrescrituras para la simulación (simulation.launch.py). Se cargan después de params.yaml y
+# solo cambian lo necesario (contracts/parameters.md, "Sobrescrituras en simulación").
+# `nav2_goal_sender.dry_run` lo fija el argumento de lanzamiento `dry_run` (falso por defecto:
+# la meta llega al servidor de navegación real del entorno simulado, FR-066).
+
+/**:
+  ros__parameters:
+    # Todos los nodos usan el reloj de la simulación (FR-064).
+    use_sim_time: true
+
+rgbd_localizer:
+  ros__parameters:
+    # La cámara ve la cara frontal de la silla; SC-008 y SC-009 se miden desde el centro de su
+    # huella. Se estima el centro (FR-036, research R10).
+    estimate_center: true
+
+detector:
+  ros__parameters:
+    # Solo la clase objetivo: reduce ruido en la imagen anotada y en la demostración.
+    class_filter: "chair"

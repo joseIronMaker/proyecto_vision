@@ -1,0 +1,103 @@
+# Parámetros por defecto de percepcion_nav.
+# Cada valor coincide con su declare_parameter en el código (constitución, principio I) y con
+# specs/001-paquete-percepcion-nav/contracts/parameters.md. Los lanzamientos pasan este archivo
+# a cada nodo; config/params_sim.yaml solo sobrescribe lo que cambia en simulación.
+
+camera:
+  ros__parameters:
+    # Ruta de video, o índice de dispositivo si es numérico ("0"). Vacío: el launch la fija con
+    # el argumento `video`; si sigue vacía, el nodo registra el error y reintenta (FR-002, FR-004).
+    source: ""
+    # Frecuencia de publicación en Hz (FR-002).
+    fps: 15.0
+    # header.frame_id de cada cuadro; marco óptico según REP 103 (FR-003).
+    frame_id: "camera_color_optical_frame"
+    # Reiniciar el video al terminar; si es false, el nodo se apaga limpio (FR-005).
+    loop: true
+    # Periodo de reintento al no abrir o perder la fuente, en s (FR-004; SC-005 pide <= 10 s).
+    reconnect_period_sec: 2.0
+
+detector:
+  ros__parameters:
+    # Pesos de YOLO. Vacío: el launch lo fija con el argumento `model`. Si el archivo no existe,
+    # el nodo falla al arrancar (FR-011, FR-016).
+    model_path: ""
+    # Score mínimo para publicar una detección (FR-011).
+    conf_threshold: 0.40
+    # Dispositivo de inferencia: "cpu" o "cuda:0" (FR-011).
+    device: "cpu"
+    # Tamaño de entrada del modelo en píxeles.
+    imgsz: 640
+    # Clases COCO separadas por comas; vacío = todas. Es una cadena, no una lista, porque una
+    # lista vacía no carga en un YAML de parámetros de ROS 2 (FR-011, research R14).
+    class_filter: ""
+
+visualizer:
+  ros__parameters:
+    # Abrir además una ventana local de OpenCV (FR-022).
+    show_window: false
+    # Cola del TimeSynchronizer exacto imagen-detecciones (FR-020).
+    sync_queue_size: 30
+
+rgbd_localizer:
+  ros__parameters:
+    # Diferencia máxima entre estampas al emparejar detección y profundidad, en s (FR-030).
+    sync_slop_sec: 0.02
+    # Cola del ApproximateTimeSynchronizer; cubre la latencia de la inferencia (research R8).
+    sync_queue_size: 30
+    # Lado de la ventana central como fracción del bbox, en (0, 1] (FR-032).
+    depth_window_fraction: 0.30
+    # Mínimo de píxeles de profundidad válidos para aceptar la mediana (FR-032).
+    min_valid_pixels: 5
+    # Estimar el centro del objeto avanzando sobre el rayo la mitad de su ancho métrico
+    # (supuesto de huella cuadrada). false: se publica la superficie visible (FR-036).
+    estimate_center: false
+
+nav2_goal_sender:
+  ros__parameters:
+    # Clase objetivo; se usa la detección de mayor score (FR-040).
+    target_class: "chair"
+    # Marco de la meta (FR-041).
+    map_frame: "map"
+    # Marco del robot para la línea robot-objeto (FR-042).
+    robot_base_frame: "base_link"
+    # Distancia de separación al objeto, en m (FR-042).
+    standoff_distance: 1.0
+    # Margen sobre la separación: no se envía meta si dist <= separación + margen, en m (FR-042).
+    arrival_tolerance: 0.30
+    # Movimiento mínimo del objetivo para reemplazar una meta activa, en m (FR-044).
+    goal_update_threshold: 0.50
+    # Salto máximo creíble del objetivo respecto al último usado, en m: los objetos son
+    # estáticos, un salto mayor es un error de estimación y se descarta (FR-044).
+    max_target_jump: 1.5
+    # Tiempo límite de las consultas tf2, en s (FR-041).
+    tf_timeout_sec: 0.2
+    # Espera máxima del servidor de acción, en s (FR-043).
+    server_timeout_sec: 2.0
+    # Calcula y publica la vista previa sin enviar la meta (FR-045).
+    dry_run: true
+    # Nombre del servidor de acción NavigateToPose (FR-043).
+    action_name: "navigate_to_pose"
+
+synthetic_depth:
+  ros__parameters:
+    # Profundidad constante publicada, en m (FR-035).
+    depth_m: 2.5
+    # Campo de visión horizontal con el que se calculan los intrínsecos sintéticos, en rad
+    # (fx = fy = (w/2)/tan(hfov/2), cx = w/2, cy = h/2; research R11).
+    hfov_rad: 1.20
+
+# ---------------------------------------------------------------------------------------------
+# Argumentos de lanzamiento de dry_run.launch.py (no son parámetros de nodo; se documentan aquí
+# por el principio I). Los mismos valores alimentan las transformaciones estáticas, camera.frame_id
+# y los marcos de nav2_goal_sender:
+#   map_frame:          map
+#   odom_frame:         odom
+#   base_frame:         base_link
+#   camera_link_frame:  camera_link
+#   optical_frame:      camera_color_optical_frame
+#   cam_x, cam_y, cam_z: 0.10, 0.0, 0.30   (posición de camera_link respecto a base_frame, en m)
+#
+# Constantes internas no ajustables (solo cadencia de registros; contracts/parameters.md):
+#   LOG_THROTTLE_SEC = 5.0, FPS_REPORT_PERIOD_SEC = 10.0, UNMATCHED_CHECK_PERIOD_SEC = 2.0
+# ---------------------------------------------------------------------------------------------
