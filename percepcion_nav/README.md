@@ -237,6 +237,21 @@ En WSL2 sin GPU, Gazebo dibuja por software y corre a ~0.5× el tiempo real. Tod
 el reloj de la simulación (`use_sim_time`), así que el sistema sigue siendo correcto, aunque más
 lento.
 
+### Demostración completa en una sola terminal
+
+```bash
+percepcion_nav/scripts/demo.sh
+```
+
+Recorre todo con Enter entre partes:
+
+1. Video con la cámara desconectada: se ven el error y los reintentos. Al conectarla, aparecen
+   las detecciones dibujadas y un resumen de `/detections`.
+2. `rqt_graph`.
+3. La simulación con el panel.
+
+Al final abre el reporte. Usa `media/sample.mp4`, o el video de prueba si aquel no existe.
+
 ### Panel de simulación (para la demostración)
 
 Un solo comando abre el panel **e inicia la simulación de la silla**: carga el entorno de ROS y
