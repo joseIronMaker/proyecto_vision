@@ -239,9 +239,22 @@ lento.
 
 ### Panel de simulación (para la demostración)
 
+Un solo comando abre el panel **e inicia la simulación de la silla**: carga el entorno de ROS y
+del `.venv`, y compila si hace falta.
+
+```bash
+percepcion_nav/scripts/simulacion_silla.sh
+```
+
+O solo el panel, con el entorno ya cargado (con `--autostart` inicia la simulación al abrir):
+
 ```bash
 ros2 run percepcion_nav sim_panel
 ```
+
+En Windows con WSL se puede crear un acceso directo `.bat` con
+`wsl.exe -d Ubuntu-24.04 -- bash -lc "~/proyecto_vision/proyecto_vision/percepcion_nav/scripts/simulacion_silla.sh"`.
+`Ctrl+C` en la terminal o cerrar la ventana detiene toda la simulación.
 
 Ventana con botones:
 

@@ -4,7 +4,8 @@ Panel de control de la simulación (herramienta de demostración, no es parte de
 Ventana con botones para iniciar, iniciar la navegación, detener y reiniciar toda la simulación
 (`simulation.launch.py`). Se ejecuta desde una terminal con el entorno cargado:
 
-    ros2 run percepcion_nav sim_panel
+    ros2 run percepcion_nav sim_panel               # abre el panel
+    ros2 run percepcion_nav sim_panel --autostart   # abre el panel e inicia la simulación
 
 La simulación se lanza en su propio grupo de procesos, así que "Detener" termina también Gazebo,
 Nav2 y los puentes. No es un nodo de ROS: usa `ros2 launch` y `ros2 param set`.
@@ -135,6 +136,7 @@ class SimPanel(QWidget):
     def _set_state(self, state):
         self._state = state
         text, color = STATES[state]
+        print(f'[panel] {text}', flush=True)
         self.status.setText(text)
         self.status.setStyleSheet(f'color: white; background: {color}; border-radius: 6px;')
         running = self._process is not None
@@ -161,6 +163,8 @@ class SimPanel(QWidget):
                                  self.opt_viewer.isChecked(), self.opt_wait.isChecked())
         self._append('$ ' + ' '.join(command))
         env = dict(os.environ, RCUTILS_LOGGING_BUFFERED_STREAM='0', PYTHONUNBUFFERED='1')
+        # Las ventanas de Gazebo, RViz y rqt usan la pantalla normal aunque el panel no la use.
+        env.pop('QT_QPA_PLATFORM', None)
         self._process = subprocess.Popen(command, stdout=subprocess.PIPE,
                                          stderr=subprocess.STDOUT, text=True, bufsize=1,
                                          start_new_session=True, env=env)
@@ -254,9 +258,16 @@ class SimPanel(QWidget):
 
 
 def main(args=None):
-    app = QApplication(sys.argv if args is None else args)
+    argv = sys.argv if args is None else args
+    app = QApplication(argv)
     panel = SimPanel()
     panel.show()
+    # Ctrl+C o una terminación cierran la ventana, y al cerrarla se detiene la simulación.
+    # El temporizador de sondeo del panel deja que Python atienda estas señales.
+    signal.signal(signal.SIGINT, lambda *_: panel.close())
+    signal.signal(signal.SIGTERM, lambda *_: panel.close())
+    if '--autostart' in argv:
+        QTimer.singleShot(500, panel.start)
     sys.exit(app.exec_())
 
 
