@@ -345,3 +345,7 @@ Las figuras están en `docs/reporte/figuras/` y se generaron del sistema en ejec
 Nota: estas mediciones se hicieron con un video de prueba construido a partir de cuadros del
 conjunto KITTI (autos y personas). El video del autor grabado con el celular (`sample.mp4`)
 reemplaza a ese video en la demostración.
+
+**Créditos de datos**: las capturas del pipeline 2D (`docs/img/pipeline_2d.png`,
+`docs/reporte/figuras/pipeline_2d.png`) usan cuadros de *KITTI Vision Benchmark Suite* (Geiger
+et al., 2013), con licencia CC BY-NC-SA 3.0, en un uso académico y no comercial.
