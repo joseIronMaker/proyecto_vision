@@ -1,0 +1,48 @@
+# Artefactos de colcon
+build/
+install/
+log/
+
+# Entorno virtual de Python
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Pesos de modelos y videos (no se versionan; van en el .zip entregado)
+*.pt
+*.onnx
+*.mp4
+*.avi
+*.mov
+*.mkv
+percepcion_nav/media/
+
+# Entregables generados (se agregan con `git add -f` si se quieren versionar)
+*.zip
+*.pdf
+
+# Sistema y editores
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+.vscode/
+.idea/
+
+# Respaldos automáticos de FreeCAD
+*.FCBak
+
+# Auxiliares de LaTeX (el PDF del reporte se agrega con git add -f si se quiere versionar)
+*.aux
+*.out
+*.toc
+*.synctex.gz
+percepcion_nav/docs/reporte/*.log
+
+# Guion personal del video (no se versiona)
+guion_video.md
